@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Product Details</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <!-- Same nav as your index -->
+  </header>
+
+  <main>
+    <section id="product-detail">
+      <!-- JS fills this -->
+    </section>
+  </main>
+
+  <footer>
+    <!-- Same footer as your index -->
+  </footer>
+
+  <script>
+    const API_BASE = 'http://localhost:5000'; // Update in production
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('id');
+
+    fetch(`${API_BASE}/api/products`)
+      .then(res => res.json())
+      .then(products => {
+        const product = products.find(p => p._id === productId);
+        const container = document.getElementById('product-detail');
+        container.innerHTML = `
+          <div class="card">
+            <img src="${product.image}" alt="${product.name}">
+            <h1>${product.name}</h1>
+            <p>${product.description}</p>
+            <p class="price">₹${product.price}</p>
+            <button onclick="addToCart('${product._id}')">Add to Cart</button>
+          </div>
+        `;
+      });
+
+    function addToCart(productId) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const existing = cart.find(item => item.id === productId);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ id: productId, quantity: 1 });
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('Added to cart!');
+    }
+  </script>
+</body>
+</html>
